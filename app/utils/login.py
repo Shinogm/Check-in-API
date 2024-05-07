@@ -2,8 +2,9 @@ from app.services.db import check_db
 from fastapi import HTTPException
 
 def verify_password( email: str, password: str):
+
     user_db = check_db.fetch_one(
-        sql='SELECT * FROM worker_admins WHERE email = %s',
+        sql='SELECT * FROM users WHERE email = %s',
         params=(email,)
     )
     if not user_db:
@@ -13,10 +14,10 @@ def verify_password( email: str, password: str):
         sql='''
         SELECT id,
           created_at, 
-          name,
-          lastname,
-            permission_id,
-                email FROM worker_admins WHERE email = %s
+          first_name,
+          last_name,
+            perms,
+                email FROM users WHERE email = %s
               ''',
         params=(email,)
     )

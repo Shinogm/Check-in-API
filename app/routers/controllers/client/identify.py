@@ -27,7 +27,7 @@ async def indentity(range: int = 3):
     user = check_db.fetch_one(
         sql='''
             SELECT 
-                user.*
+                users.*
             FROM fingerprints
             JOIN users user ON user.id = fingerprints.user_id
             WHERE fingerprints.id = %s
