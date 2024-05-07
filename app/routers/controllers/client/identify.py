@@ -1,7 +1,6 @@
 from app.routers.controllers.finger.scan import scan_finger
 from pyzkfp import ZKFP2
 from app.services.db import check_db
-import json
 
 async def indentity(range: int = 3):
     zkfp2 = ZKFP2()

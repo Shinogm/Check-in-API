@@ -12,7 +12,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    perms ENUM('admin', 'client', 'none') DEFAULT 'none' NOT NULL,
+    perms ENUM('admin', 'client', 'none') DEFAULT 'noneS' NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (email)
 );
