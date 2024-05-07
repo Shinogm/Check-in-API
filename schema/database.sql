@@ -6,19 +6,21 @@ CREATE DATABASE checkdb_gym DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicod
 USE checkdb_gym;
 
 CREATE TABLE users (
-    id INT(6) PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     perms ENUM('admin', 'client', 'none') DEFAULT 'none' NOT NULL,
+    PRIMARY KEY (id),
     UNIQUE (email)
 );
+
 CREATE TABLE fingerprints (
     id INT NOT NULL AUTO_INCREMENT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_id INT(6) NOT NULL,
+    user_id INT NOT NULL,
     fingerprint LONGTEXT NOT NULL,
     tmp BLOB NOT NULL,
     PRIMARY KEY (id),
@@ -26,9 +28,9 @@ CREATE TABLE fingerprints (
 );
 
 CREATE TABLE memberships (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT(6) NOT NULL AUTO_INCREMENT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_id INT(6) NOT NULL,
+    user_id INT NOT NULL,
     expiration_date DATE,
     have_membership ENUM('yes', 'no') DEFAULT 'no' NOT NULL,
     fingerprint_id INT,
@@ -39,12 +41,12 @@ CREATE TABLE memberships (
 
 DELIMITER $$
 CREATE TRIGGER generate_user_id
-BEFORE INSERT ON users
+BEFORE INSERT ON memberships
 FOR EACH ROW
 BEGIN
     DECLARE new_id INT(6);
     SET new_id = FLOOR(RAND() * 900000) + 100000;
-    WHILE EXISTS (SELECT * FROM users WHERE id = new_id) DO
+    WHILE EXISTS (SELECT * FROM memberships WHERE id = new_id) DO
         SET new_id = FLOOR(RAND() * 900000) + 100000;
     END WHILE;
     SET NEW.id = new_id;

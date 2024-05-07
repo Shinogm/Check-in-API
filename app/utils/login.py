@@ -1,15 +1,15 @@
-from app.services.db import gym_db
+from app.services.db import check_db
 from fastapi import HTTPException
 
 def verify_password( email: str, password: str):
-    user_db = gym_db.fetch_one(
+    user_db = check_db.fetch_one(
         sql='SELECT * FROM worker_admins WHERE email = %s',
         params=(email,)
     )
     if not user_db:
         raise HTTPException(status_code=404, detail='User not found')
 
-    user_db_all = gym_db.fetch_one(
+    user_db_all = check_db.fetch_one(
         sql='''
         SELECT id,
           created_at, 
