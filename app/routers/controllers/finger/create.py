@@ -1,8 +1,7 @@
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException
 from app.services.db import check_db
 from pyzkfp import ZKFP2
 from app.routers.controllers.finger.scan import scan_finger
-import json
 
 async def create_worker_finger(user_id: int):
     zkfp2 = ZKFP2()
