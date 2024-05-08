@@ -3,7 +3,7 @@ from app.services.db import check_db
 from pyzkfp import ZKFP2
 from app.routers.controllers.finger.scan import scan_finger
 
-async def create_worker_finger(user_id: int):
+async def create_client_finger(user_id: int):
     zkfp2 = ZKFP2()
     zkfp2.Init()
 
@@ -14,6 +14,7 @@ async def create_worker_finger(user_id: int):
 
     if not user_db:
         raise HTTPException(status_code=404, detail="User not found")
+    
     finger_user_db = check_db.fetch_one(
         sql="SELECT * FROM fingerprints WHERE user_id = %s",
         params=(user_id,)
@@ -35,6 +36,7 @@ async def create_worker_finger(user_id: int):
     )
     if not save_finger:
         raise HTTPException(status_code=500, detail="Error saving fingerprints")
+    
     import bcrypt
     finger_user_db = check_db.fetch_one(
         sql="SELECT * FROM fingerprints WHERE user_id = %s",
