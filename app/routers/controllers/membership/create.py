@@ -14,22 +14,21 @@ async def have_membership(client_id: int, membership_month: int = 30):
         if not get_client:
             raise HTTPException(status_code=404, detail='Client not found')
         
-        if get_client['perm'] != UserTypeEnum.CLIENT.value:
+        if get_client['perms'] != UserTypeEnum.CLIENT.value:
             raise HTTPException(status_code=400, detail='The user is not a client')
         
+        # Check if the client has a membership
         client_membership = check_db.fetch_one(
             sql='SELECT * FROM memberships WHERE user_id = %s ',
             params=(client_id,)
         )
-        
-        if client_membership['have_membership'] == MembershipTypeEnum.NOT_MEMBER.value:
-
+        if client_membership is None:
             expiration_date = datetime.now() + timedelta(days=membership_month)
 
             membership_enum = MembershipTypeEnum.IS_MEMBER.value
 
             put_membership = check_db.execute(
-                sql='INSERT INTO membership (user_id, have_membership, expiration_date) VALUES (%s, %s, %s)',
+                sql='INSERT INTO memberships (user_id, have_membership, expiration_date) VALUES (%s, %s, %s)',
                 params=(client_id, membership_enum, expiration_date)
             )
 
@@ -46,7 +45,7 @@ async def have_membership(client_id: int, membership_month: int = 30):
             }
         
         get_client_db = check_db.fetch_one(
-            sql='SELECT * FROM clients WHERE id = %s',
+            sql='SELECT * FROM users WHERE id = %s',
             params=(client_id,)
         )
 

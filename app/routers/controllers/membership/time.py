@@ -35,7 +35,7 @@ async def check_all_membership_is_out():
     try:
 
         all_memberships = check_db.fetch_all(
-            sql='SELECT * FROM membership'
+            sql='SELECT * FROM memberships'
         )
         if not all_memberships:
             raise HTTPException(status_code=404, detail='Memberships not found')
@@ -66,7 +66,7 @@ async def membership_is_out_finger():
         res = await indentity()
 
         membership = check_db.fetch_all(
-            sql='SELECT * FROM membership WHERE id = %s',
+            sql='SELECT * FROM memberships WHERE id = %s',
             params=(res['id'],)
         )
         
