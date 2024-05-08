@@ -1,6 +1,6 @@
 from app.services.fastapi import App
 from fastapi.responses import StreamingResponse
-from app.routers.router import admin, client, membership, perms
+from app.routers.router import admin, client, membership, perms, finger
 from datetime import datetime
 import asyncio
 
@@ -9,6 +9,7 @@ def main():
     routers=[
         admin.router,
         client.router,
+        finger.router,
         membership.router,
         perms.router
     ],
