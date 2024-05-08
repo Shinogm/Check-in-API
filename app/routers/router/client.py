@@ -9,3 +9,7 @@ router.post('/identify')(identify.indentity)
 router.get('/get-client/{client_id}')(get.get_one_client)
 router.get('/get-all-clients')(get.get_all_clients)
 
+router.put('/modify-client/{client_id}')(modify.modify_client)
+
+router.delete('/delete-client/{client_id}')(delete.delete_client)
+
