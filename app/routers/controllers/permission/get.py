@@ -5,7 +5,13 @@ from app.models.user.user import UserTypeEnum
 async def get_permissions():
         
         get_permissions = check_db.fetch_all(
-            sql="SELECT * FROM users.perms"
+            sql='''SELECT DISTINCT COLUMN_TYPE
+                        FROM information_schema.columns
+                        WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'perms';
+
+
+ '''
+
         )
     
         if not get_permissions:

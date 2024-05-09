@@ -64,10 +64,12 @@ from app.routers.controllers.client.identify import indentity
 async def membership_is_out_finger():
     try:
         res = await indentity()
+        user_id: int = int(res['user']['id'])
+        print ("user_id", user_id)
 
-        membership = check_db.fetch_all(
-            sql='SELECT * FROM memberships WHERE id = %s',
-            params=(res['id'],)
+        membership = check_db.fetch_one(
+            sql='SELECT * FROM memberships WHERE user_id = %s',
+            params=(user_id,)
         )
         
         if not membership:
@@ -77,11 +79,11 @@ async def membership_is_out_finger():
         response = await comparar_fechas_y_calcular_dias_restantes(str(membership['expiration_date']))
         client_db = check_db.fetch_one(
                 sql='SELECT * FROM users WHERE id = %s',
-                params=(res['id'],)
+                params=(user_id,)
             )
             
         return {
-                "message": "verified membership by codeS",
+                "message": "verified membership by fingerprint",
                 "memberships": client_db,
                 "response": response
             }

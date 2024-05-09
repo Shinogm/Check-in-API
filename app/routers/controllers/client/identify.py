@@ -25,15 +25,16 @@ async def indentity(range: int = 3):
         raise Exception('Fingerprint not found')
     
     user = check_db.fetch_one(
-        sql='''
-            SELECT 
-                users.*
-            FROM fingerprints
-            JOIN users user ON user.id = fingerprints.user_id
-            WHERE fingerprints.id = %s
-        ''',
-        params=(fingerprint_id,)
+    sql='''
+        SELECT 
+            u.*
+        FROM fingerprints
+        JOIN users u ON u.id = fingerprints.user_id
+        WHERE fingerprints.id = %s
+    ''',
+    params=(fingerprint_id,)
     )
+
 
 
     return {

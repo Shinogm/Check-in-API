@@ -5,9 +5,9 @@ async def get_finger_image(user_id: int):
     finger_image = check_db.fetch_one(
         sql='''
             SELECT
-                id, create_at, fingerprint
+                id, created_at,  user_id fingerprint
             FROM fingerprints
-            WHERE id = %s
+            WHERE user_id = %s
             ''',
         params=(user_id,)
     )
