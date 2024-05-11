@@ -29,35 +29,44 @@ async def comparar_fechas_y_calcular_dias_restantes(fecha_expiracion: str):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400, detail="error to compare dates and calculate remaining days")
-    
-    
+
+
 async def check_all_membership_is_out():
     try:
-
         all_memberships = check_db.fetch_all(
             sql='SELECT * FROM memberships'
         )
         if not all_memberships:
             raise HTTPException(status_code=404, detail='Memberships not found')
-        
+
+        all_clients_info = []
         for membership in all_memberships:
             print(membership['expiration_date'])
-            response = await comparar_fechas_y_calcular_dias_restantes(str(membership['expiration_date']))
-            client_db = check_db.fetch_one(
+            user_id = membership['user_id']
+            # Obtener la información del usuario directamente en una sola consulta SQL
+            all_clients = check_db.fetch_all(
                 sql='SELECT * FROM users WHERE id = %s',
-                params=(membership['user_id'],)
+                params=(user_id,)
             )
-            
-        return {
-                "message": "All memberships",
-                "memberships": client_db,
+            response = await comparar_fechas_y_calcular_dias_restantes(str(membership['expiration_date']))
+
+            # Agregar información del cliente a la lista
+            all_clients_info.append({
+                "membership": membership,
+                "client_info": all_clients,
                 "response": response
-            }
+            })
+
+        return {
+            "message": "verified all memberships",
+            "memberships_info": all_clients_info
+        }
 
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400, detail="error to check all memberships")
-    
+
+
 
 from app.routers.controllers.client.identify import indentity
 
