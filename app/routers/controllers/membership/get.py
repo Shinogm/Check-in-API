@@ -32,7 +32,7 @@ async def get_members(member: MembershipTypeEnum):
             params=(members['user_id'],)
         )
     
-    if member == MembershipTypeEnum.NOT_MEMBER:
+    if member == MembershipTypeEnum.NOT_MEMBER.value:
         return {
             "status": "success",
             "message": "Non-members found",

@@ -1,4 +1,4 @@
--- Active: 1715043174887@@127.0.0.1@3306@checkdb_gym
+-- Active: 1713670017818@@127.0.0.1@3306
 DROP DATABASE IF EXISTS checkdb_gym;
 
 CREATE DATABASE checkdb_gym DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -52,6 +52,17 @@ CREATE TABLE memberships (
     have_membership ENUM('yes', 'no') DEFAULT 'no' NOT NULL,
     fingerprint_id INT,
     PRIMARY KEY (id),
-    CONSTRAINT fk_membership_user FOREIGN KEY (user_id)REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_membership_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_membership_fingerprint FOREIGN KEY (fingerprint_id) REFERENCES fingerprints (id) ON DELETE CASCADE
 );
+
+DELIMITER $$
+
+CREATE TRIGGER before_membership_insert
+BEFORE INSERT ON memberships
+FOR EACH ROW
+BEGIN
+    SET NEW.id = (SELECT generate_user_id());
+END$$
+
+DELIMITER ;

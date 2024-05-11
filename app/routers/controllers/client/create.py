@@ -23,5 +23,6 @@ async def create_user(user: User = Depends(User.as_form)):
     return {
         "status": "success",
         "message": f"User created the perm is {UserTypeEnum.CLIENT.value}",
+        "id": create_user,
         "user": user
     }
