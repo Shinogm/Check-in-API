@@ -37,3 +37,25 @@ async def cancel_membership(user_id: int):
         "message": "Membership cancelled",
         "user": get_user
     }
+
+async def cancel_membership_where_code(code: int):
+        
+        get_user = check_db.fetch_one(
+            sql="SELECT * FROM memberships WHERE id = %s",
+            params=(code,)
+        )
+
+        if not get_user:
+            raise HTTPException(status_code=404, detail="Membership not found")
+        
+        check_db.execute(
+            sql='DELETE FROM memberships WHERE id = %s',
+            params=(code,)
+        )
+
+        return {
+            "status": "success",
+            "message": "Membership cancelled",
+            "user": get_user
+        }
+    

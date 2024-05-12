@@ -1,70 +1,58 @@
 from fastapi import HTTPException
 from app.services.db import check_db
 from app.models.client.membership import MembershipTypeEnum
-async def get_members(member: MembershipTypeEnum):
 
-    print(member.value)
+async def get_members():
 
-    get_members_query = check_db.fetch_all(
-        sql="SELECT * FROM memberships WHERE have_membership = %s",
-        params=(member.value,)
+    all_memberships = check_db.fetch_all(
+        sql='SELECT * FROM memberships'
     )
+    if not all_memberships:
+        raise HTTPException(status_code=404, detail='Memberships not found')
 
-    if not get_members_query and member.value == "no":
-        user_not_member_query = check_db.fetch_all(
-            sql='''
-            SELECT 
-                u.id AS user_id,
-                u.first_name,
-                u.last_name,
-                u.email
-            FROM 
-                users u
-            LEFT JOIN 
-                memberships m ON u.id = m.user_id
-            WHERE 
-                m.user_id IS NULL;
-            '''
+    all_clients_info = []
+    all_clients_info.clear()
+    for membership in all_memberships:
+        user_id = membership['user_id']
+        # Obtener la información del usuario directamente en una sola consulta SQL
+        all_clients = check_db.fetch_all(
+            sql='SELECT * FROM users WHERE id = %s',
+            params=(user_id,)
         )
-        if not user_not_member_query:
-            raise HTTPException(
-                status_code=404,
-                detail="No members found"
-            )
-        
-        return {
-            "status": "success",
-            "message": "Members found",
-            "members": user_not_member_query
-        }
 
-    all_members = []
+        # Agregar información del cliente a la lista
+        all_clients_info.append({
+            "membership": membership,
+            "client_info": all_clients
+        })
 
-    for member_row in get_members_query:
-        get_user_with_membership_query = check_db.fetch_all(
-            sql='''
-            SELECT 
-                u.id AS user_id,
-                u.first_name,
-                u.last_name,
-                u.email,
-                m.id AS membership_id,
-                m.created_at AS membership_created_at,
-                m.expiration_date,
-                m.have_membership
-            FROM 
-                users u
-            JOIN 
-                memberships m ON u.id = m.user_id
-            WHERE
-                u.id = %s;
-            ''',
-            params=(member_row['user_id'],)
-        )
-        all_members.extend(get_user_with_membership_query)
+    length = len(all_clients_info)
+
 
     return {
-        "status": "success",
-        "message": "Members found",
-        "members": all_members
+        "message": "verified all memberships",
+        "length": length,
+        "memberships": all_clients_info
     }
+
+async def get_clients_no_membership():
+    all_clients = check_db.fetch_all(
+        sql="""
+                SELECT u.*
+                    FROM users u
+                    LEFT JOIN memberships m ON u.id = m.user_id
+                    WHERE m.user_id IS NULL
+                    AND u.perms = 'client';
+
+            """
+    )
+    if not all_clients:
+        raise HTTPException(status_code=404, detail='Clients not found')
+
+    return {
+        "message": "clients without membership",
+        "length": len(all_clients),
+        "clients": all_clients
+    }
+
+
